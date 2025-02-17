@@ -1,7 +1,31 @@
-FROM outlinewiki/outline:version-0.44.0
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-# Run the memory intensive build on an instance with 4 GB of memory (M)
-RUN yarn install && yarn build
+jobs:
+  build:
 
-# Start the app on a smaller instance (nano)
-CMD yarn start
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Start application
+      run: npm start
